@@ -1,0 +1,180 @@
+{
+	"info": {
+		"_postman_id": "89178b10-f078-4e5e-b3b1-0651f659c0ff",
+		"name": "Demo API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "14624478"
+	},
+	"item": [
+		{
+			"name": "AddBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"const jsonData = pm.response.json();",
+							"const bookID = jsonData.ID;",
+							"pm.collectionVariables.set(\"bookid\",bookID)",
+							"pm.test(\"Validation of the status code being 200\", function(){",
+							"    pm.response.to.have.status(200);",
+							"    //pm.response.to.have.property(\"Msg\");",
+							"    pm.expect(jsonData).have.property(\"Msg\");",
+							"})",
+							"",
+							"pm.test(\"Header, cookies, responsetime validation\", function(){",
+							"",
+							"    pm.response.to.have.header(\"Content-Type\");",
+							"    pm.expect(pm.response.headers.get(\"Content-Type\")).to.eql(\"application/json;charset=UTF-8\");",
+							"    pm.expect(pm.response.responseTime).to.be.below(3600);",
+							"",
+							"    // To verify a particular text is available on the response JSON",
+							"    //expect(pm.response.text).to.include(\"text\")",
+							"})",
+							"",
+							"pm.test(\"Concat Request properties to generate a response property\", function(){",
+							"    ",
+							"    const isbn_val=pm.collectionVariables.get(\"isbn\");",
+							"    //Getting a property from Request",
+							"    var request=JSON.parse(pm.request.body.raw);",
+							"    const aisle_val=request.aisle;",
+							"    const expectedID= isbn_val+aisle_val;",
+							"    pm.expect(expectedID).to.eql(bookID);",
+							"",
+							"})"
+						],
+						"type": "text/javascript"
+					}
+				},
+				{
+					"listen": "prerequest",
+					"script": {
+						"exec": [
+							"const generate=pm.globals.get(\"ISBN\");",
+							"const  value=pm.variables.replaceIn('{{$randomInt}}');",
+							"pm.collectionVariables.set(\"isbn\",generate+value);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n\"name\":\"Testq Dates\",\n\"isbn\": \"{{isbn}}\",\n\"aisle\":\"201125\",\n\"author\":\"John12Wayne\"\n}"
+				},
+				"url": {
+					"raw": "{{base_url}}/Library/Addbook.php",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"Library",
+						"Addbook.php"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "GetBook",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Test Should Fail and throw 200\", function(){",
+							"pm.response.to.have.status(200);",
+							"})",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": ""
+				},
+				"url": {
+					"raw": "{{base_url}}/Library/GetBook.php?ID={{bookid}}",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"Library",
+						"GetBook.php"
+					],
+					"query": [
+						{
+							"key": "ID",
+							"value": "{{bookid}}"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "DeleteBook",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n \n\"ID\" : \"{{bookid}}\"\n \n} "
+				},
+				"url": {
+					"raw": "{{base_url}}/Library/DeleteBook.php ",
+					"host": [
+						"{{base_url}}"
+					],
+					"path": [
+						"Library",
+						"DeleteBook.php "
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "isbn",
+			"value": "",
+			"type": "string"
+		},
+		{
+			"key": "bookid",
+			"value": ""
+		}
+	]
+}
